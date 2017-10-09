@@ -154,6 +154,8 @@ EM_DFM_SS_block_idioQARMA_restrMQ<-function(X,Par){
 
 InitCond<-function(x,r,p,blocks,optNaN,Rcon,q,nQ,i_idio){
   
+  library(magic)
+  
   pC = size(Rcon,2)
   ppC = max(p,pC)
   n_b = size(blocks,2)
@@ -183,6 +185,103 @@ InitCond<-function(x,r,p,blocks,optNaN,Rcon,q,nQ,i_idio){
   res = xBal
   resNaN = xNaN
   indNaN[1:pC-1,] <- T
+  
+  
+  for(i in 1:n_b){    # roda o loop em cada um dos blocos (geral, real e nominal)
+    r_i<-r[i]
+    
+    ########################
+    # Observation equation #
+    ########################
+    
+    C_i = zeros(N,r_i*ppC)
+    idx_i = find(blocks[,i])
+    
+    # Atenção aqui funciona pois a(s) última(S) variável(is) da base de dados é(são) trimestral(is)!
+    idx_iM = idx_i[idx_i<NM+1];   # índice representando variável mesal
+    idx_iQ = idx_i[idx_i>NM];     # índice representando variável trimestral
+    
+    eig<-eigen(cov(res[,idx_iM]))
+    v<-eig$vectors[,1:r_i]
+    d<-eig$values[1:r_i]
+    
+    C_i[idx_iM,1:r_i] = v
+    f = as.matrix(res[,idx_iM])%*%as.matrix(v)
+    for(kk in 0:(max(p+1,pC)-1)){
+      if(kk == 0){
+        FF<-f[(pC-kk):(dim(f)[1]-kk),]
+      }else{
+        FF <- cbind(FF,f[(pC-kk):(dim(f)[1]-kk),])
+      }
+    }
+    
+    Rcon_i = kronecker(Rcon,eye(r_i))
+    q_i = kronecker(q,zeros(r_i,1));
+    ff = FF[,1:(r_i*pC)]
+    
+    for(j in idx_iQ){     # Coeficiente "loadings" de Variáveis trimestrais
+        xx_j = resNaN[pC:dim(resNaN)[1],j]
+        if(sum(!is.na(xx_j)) < size(ff,2)+2){
+            xx_j = res[pC:dim(res)[1],j]
+        }
+        ff_j = ff[!is.na(xx_j),]
+        xx_j = xx_j[!is.na(xx_j)]
+        iff_j = solve(t(ff_j)%*%ff_j)
+        Cc = iff_j%*%t(ff_j)%*%xx_j
+        Cc = Cc - iff_j%*%t(Rcon_i)%*%solve(Rcon_i%*%iff_j%*%t(Rcon_i))%*%(Rcon_i%*%Cc-q_i);
+        C_i[j,1:(pC*r_i)] <- t(Cc)
+    }
+    
+    ff = rbind(zeros(pC-1,pC*r_i),ff)
+    res = res - ff%*%t(C_i)
+    resNaN = res
+    for(i_aux in 1:dim(indNaN)[2]){
+    resNaN[indNaN[,i_aux],i_aux] <- NA
+    }
+    C <- cbind(C,C_i)
+    
+    #######################    
+    # Transition Equation #
+    #######################  
+    z <- FF[,1:r_i]
+    Z <- FF[,(r_i+1):(r_i*(p+1))]
+    A_i = t(zeros(r_i*ppC,r_i*ppC))
+    A_temp = solve(t(Z)%*%Z)%*%t(Z)%*%z
+    A_i[1:r_i,1:r_i*p] <- t(A_temp)
+    A_i[(r_i+1):dim(A_i)[1],1:(r_i*(ppC-1))] <- eye(r_i*(ppC-1))
+
+    ##########################
+    
+    Q_i = zeros(ppC*r_i,ppC*r_i)
+    e = z  - Z%*%A_temp         # VAR residuals
+    Q_i[1:r_i,1:r_i] = cov(e);  # VAR covariance matrix
+  
+    initV_i = reshape(solve(eye((r_i*ppC)^2)-kronecker(A_i,A_i))%*%c(Q_i),r_i*ppC,r_i*ppC);
+  
+    if(is.null(A)){
+      A<-A_i
+    }else{
+      A <- adiag(A,A_i)  
+    }
+    
+    if(is.null(Q)){
+      Q<-Q_i
+    }else{
+      Q <- adiag(Q,Q_i)  
+    }
+    
+    if(is.null(initV)){
+      initV<-initV_i
+    }else{
+      initV <- adiag(initV,initV_i)  
+    }
+     
+  # linha 401 do código em matlab
+    
+  }
+  
+  
+  
   
 }
 
