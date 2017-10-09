@@ -144,6 +144,14 @@ EM_DFM_SS_block_idioQARMA_restrMQ<-function(X,Par){
   
   Resinitcond<-InitCond(xNaN,r,p,blocks,optNaN,R_mat,q,nQ,i_idio);
   
+  A<-Resinitcond$A
+  C<-Resinitcond$C
+  Q<-Resinitcond$Q
+  R<-Resinitcond$R
+  initZ<-Resinitcond$initZ
+  initV<-Resinitcond$initV
+  
+  
   
   
 }
@@ -281,7 +289,76 @@ InitCond<-function(x,r,p,blocks,optNaN,Rcon,q,nQ,i_idio){
   }
   
   
+  R = diag(diag(var(resNaN,na.rm = T)))
   
+  eyeN = eye(N)
+  eyeN<-eyeN[,i_idio]
+  
+  # Initial conditions
+  C=cbind(C,eyeN)
+  
+  ii_idio = find(i_idio)
+  n_idio = length(ii_idio)
+  B = zeros(n_idio)
+  S = zeros(n_idio)
+  
+  BM<-zeros(n_idio)
+  SM<-zeros(n_idio)
+  
+  for (i in 1:n_idio){
+  R[ii_idio[i],ii_idio[i]] <- 1e-04
+  
+  res_i = resNaN[,ii_idio[i]]
+  # number of leading zeros
+  leadZero = max( find( t(1:TT) == cumsum(is.na(res_i)) ) )
+  endZero = max( find( t(1:TT) == cumsum(is.na(res_i[length(res_i):1])) ) );
+  
+  res_i<-res_i[(leadZero+1):(length(res_i)-endZero)]
+  
+  BM[i,i] = solve(t(res_i[1:(length(res_i)-1)])%*%res_i[1:(length(res_i)-1)])%*%t(res_i[1:(length(res_i)-1)])%*%res_i[2:length(res_i)] 
+  SM[i,i] = var(res_i[2:length(res_i)]-res_i[1:(length(res_i)-1)]*BM[i,i])
+  # SM[i,i] = var(res_i[2:length(res_i)]-res_i[1:(length(res_i)-1)]*B[i,i])
+  # ATENÇÃO: Aqui os autores usam B[i,i], porém esse valor é 0. Então eu uso BM[i,i]
+  }
+  
+  initViM = diag(1/diag(eye(size(BM,1))-BM^2))%*%SM;
+              
+  
+  C<-cbind(C,rbind(zeros(NM,5*nQ),t(kronecker(eye(nQ),c(1,2,3,2,1)))))
+  Rdiag<-diag(R)
+  sig_e <- Rdiag[(NM+1):N]/19
+  Rdiag[(NM+1):N] <- 1e-04
+  R = diag(Rdiag)
+  
+  BQ = kronecker(eye(nQ),rbind(zeros(1,5),cbind(eye(4),zeros(4,1))))
+  temp = zeros(5)
+  temp[1,1] = 1
+  if(is.matrix(sig_e)){
+    SQ = kronecker(diag(sig_e),temp)
+  }else{
+    SQ = kronecker(diag(as.matrix(sig_e)),temp)  
+  }
+  
+  
+  temp = matrix(c(19, 16, 10, 4, 1, 16, 19, 16, 10, 4, 10, 16, 19, 16, 10, 4, 10, 16, 19, 16, 1, 4, 10, 16, 19),
+                5,5)
+  if(is.matrix(sig_e)){
+    initViQ = kronecker(diag(sig_e),temp);
+  }else{
+    initViQ = kronecker(sig_e,temp);
+  }
+  
+  A1<-magic::adiag(A,BM,BQ)
+  Q1<-magic::adiag(Q, SM, SQ)
+ 
+  A<-A1
+  Q<-Q1
+  
+  # Initial conditions
+  initZ = zeros(size(A,1),1); ##[randn(1,r*(nlag+1))]';
+  initV = magic::adiag(initV, initViM, initViQ)
+  
+  return(list(A = A, C = C, Q = Q, R = R, initZ = initZ, initV = initV))
   
 }
 
