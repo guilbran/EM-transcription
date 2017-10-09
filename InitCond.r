@@ -168,23 +168,34 @@ InitCond<-function(x,r,p,blocks,optNaN,Rcon,q,nQ,i_idio){
   Rdiag[(NM+1):N] <- 1e-04
   R = diag(Rdiag)
   
-  BQ = kronecker(eye(nQ),rbind(zeros(1,5),cbind(eye(4),zeros(4,1))))
+  rho0<-0.1
+  
+  BQ <- kronecker(eye(nQ),rbind(cbind(rho0,zeros(1,4)),cbind(eye(4),zeros(4,1))))
   temp = zeros(5)
   temp[1,1] = 1
   if(is.matrix(sig_e)){
-    SQ = kronecker(diag(sig_e),temp)
+    SQ = kronecker(diag((1-rho0^2)*sig_e),temp)
   }else{
-    SQ = kronecker(diag(as.matrix(sig_e)),temp)  
+    SQ = kronecker((1-rho0^2)*sig_e,temp)
   }
   
+  initViQ = reshape(solve(eye((5*nQ)^2)-kronecker(BQ,BQ))%*%c(SQ),5*nQ,5*nQ)
   
-  temp = matrix(c(19, 16, 10, 4, 1, 16, 19, 16, 10, 4, 10, 16, 19, 16, 10, 4, 10, 16, 19, 16, 1, 4, 10, 16, 19),
-                5,5)
-  if(is.matrix(sig_e)){
-    initViQ = kronecker(diag(sig_e),temp);
-  }else{
-    initViQ = kronecker(sig_e,temp);
-  }
+  # BQ = kronecker(eye(nQ),rbind(zeros(1,5),cbind(eye(4),zeros(4,1))))
+  # temp = zeros(5)
+  # temp[1,1] = 1
+  # if(is.matrix(sig_e)){
+  #   SQ = kronecker(diag(sig_e),temp)
+  # }else{
+  #   SQ = kronecker(diag(as.matrix(sig_e)),temp)  
+  # }
+  # temp = matrix(c(19, 16, 10, 4, 1, 16, 19, 16, 10, 4, 10, 16, 19, 16, 10, 4, 10, 16, 19, 16, 1, 4, 10, 16, 19),
+  #               5,5)
+  # if(is.matrix(sig_e)){
+  #   initViQ = kronecker(diag(sig_e),temp);
+  # }else{
+  #   initViQ = kronecker(sig_e,temp);
+  # }
   
   A1<-magic::adiag(A,BM,BQ)
   Q1<-magic::adiag(Q, SM, SQ)
