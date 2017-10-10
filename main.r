@@ -119,8 +119,6 @@ Par<-list(r=c(1,1,1),p=1,max_iter=500,i_idio=c(rep(T,25),F),
 
 # function ----------------------------------------------------------------
 
-
-
-EM_DFM_SS_block_idioQARMA_restrMQ(X,Par)
+RES<-EM_DFM_SS_block_idioQARMA_restrMQ(X,Par)
 
 

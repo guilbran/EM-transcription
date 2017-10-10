@@ -1,4 +1,5 @@
 SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
+  
   # %______________________________________________________________________
   # % Kalman filter for stationary systems with time-varying system matrices
   # % and missing data.
@@ -60,6 +61,12 @@ SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
       Pu <- P
     } else {
       
+      
+      if(!is.matrix(Z_t)){
+        Z_t<-t(as.matrix(Z_t))
+      }
+      
+      
       PZ  <- P%*%t(Z_t)
       iF  <- solve(Z_t%*%PZ + R_t)
       PZF <- PZ%*%iF
@@ -67,7 +74,7 @@ SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
       V <- y_t - Z_t%*%A
       Au <- A  + PZF%*%V
       Pu <- P  - PZF%*%t(PZ)
-      Pu <-  0.5%*%(Pu+t(Pu))
+      Pu <-  0.5*(Pu+t(Pu))
       S$loglik <- S$loglik + 0.5*(log(det(iF))  - t(V)%*%iF%*%V)
     }
     

@@ -18,10 +18,10 @@ MissData <- function(y,C,R){
   # [y,C,R,L] 
   
   ix <- !is.na(y)
-  e  <- eye(size(y,1))
+  e  <- eye(length(y))
   L  <- e[,ix]
   
-  y <-    y(ix)
+  y <-    y[ix]
   C  <-  C[ix,]  
   R  <-  R[ix,ix]
   

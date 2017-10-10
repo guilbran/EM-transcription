@@ -11,7 +11,12 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
   # Compute the (expected) sufficient statistics for a single Kalman filter sequence.
   
   #Running the Kalman filter with the current estimates of the parameters
-  ################ [Zsmooth, Vsmooth, VVsmooth, loglik] = runKF(y, A, C, Q, R, Z_0, V_0);
+  res_runKF = runKF(y, A, C, Q, R, Z_0, V_0);
+  
+  Zsmooth<-res_runKF$xsmooth
+  Vsmooth<-res_runKF$Vsmooth
+  VVsmooth<-res_runKF$VVsmooth
+  loglik<-res_runKF$loglik
   
   A_new <- A
   Q_new <- Q
@@ -40,7 +45,7 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
     V_0_new[(rp1+1):(rp1+r_i*ppC),(rp1+1):(rp1+r_i*ppC)] <- Vsmooth[(rp1+1):(rp1+r_i*ppC),(rp1+1):(rp1+r_i*ppC),1]
   }
   
-  rp1 <- rowSums(r)*ppC
+  rp1 <- sum(r)*ppC
   niM <- sum(i_idio[1:nM])
   
   # idiosyncratic
@@ -57,7 +62,8 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
   
   Z_0 <- Zsmooth[,1] #zeros(size(Zsmooth,1),1); #
   
-  nanY <- is.nan(y)
+  # nanY <- is.nan(y)
+  nanY<-is.na(y)
   y[nanY] <- 0
   
   # LOADINGS
@@ -171,7 +177,11 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
   RR[(nM+1):length(RR)] <- 1e-04
   R_new <- diag(RR)
   
-  # output
-  list(C_new = C_new, R_new = R_new, A_new = A_new, Q_new = Q_new, Z_0 = Z_0, V_0 = V_0, loglik = loglik)
+  if(!is.matrix(Z_0)){
+    Z_0<-matrix(Z_0,length(Z_0),1)
+  }
   
+  # output
+  return(list(C_new = C_new, R_new = R_new, A_new = A_new, Q_new = Q_new, Z_0 = Z_0, V_0 = V_0, loglik = loglik))
+
 }

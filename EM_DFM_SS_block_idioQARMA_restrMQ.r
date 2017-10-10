@@ -62,7 +62,7 @@ EM_DFM_SS_block_idioQARMA_restrMQ<-function(X,Par){
   y_est_indNaN<-t(y_est$indNaN)
   y_est<-t(y_est$X)
   
-  
+ 
   while ((num_iter < max_iter) & !converged){
     
     res_EMstep = EMstep(y_est, A, C, Q, R, Z_0, V_0, r,p,R_mat,q,nQ,i_idio,blocks)
@@ -72,6 +72,9 @@ EM_DFM_SS_block_idioQARMA_restrMQ<-function(X,Par){
     R = res_EMstep$R_new;
     A = res_EMstep$A_new;
     Q = res_EMstep$Q_new;
+    Z_0<-res_EMstep$Z_0
+    V_0<-res_EMstep$V_0
+    loglik<-res_EMstep$loglik
     
     # Checking convergence
     if (num_iter>2){

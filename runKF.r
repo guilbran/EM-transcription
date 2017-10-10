@@ -18,7 +18,7 @@ runKF <- function(y, A, C, Q, R, x_0, Sig_0){
   VVsmooth <- S$PmT_1;
   loglik <- S$loglik;
   
-  return(list(xsmooth,Vsmooth,VVsmooth,loglik))  
+  return(list(xsmooth = xsmooth,Vsmooth = Vsmooth,VVsmooth = VVsmooth,loglik = loglik))  
 
 }
 
