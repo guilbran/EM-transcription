@@ -25,7 +25,7 @@ remNaNs_spline <-function(X,options){
     # nanEnd <- which(rem1[length(rem1):1])
     # nanLE <- c(nanEnd,nanLead)
     nanLE<-nanLead
-    X[nanLE,] <- NA
+    X<-X[-nanLE,]
     indNaN=is.na(X)
     for (i in 1:N){  
       x = X[,i]
@@ -52,7 +52,7 @@ remNaNs_spline <-function(X,options){
     # nanEnd <- which(rem1[length(rem1):1])
     # nanLE <- c(nanEnd,nanLead)
     nanLE<-nanLead
-    X[nanLE,] <- NA
+    X<-X[-nanLE,]
     indNaN=is.na(X)
     
   }else if(options$method == 4){ # remove rows with leading and closing zeros & replace missing values
@@ -62,7 +62,7 @@ remNaNs_spline <-function(X,options){
     # nanEnd <- which(rem1[length(rem1):1])
     # nanLE <- c(nanEnd,nanLead)
     nanLE<-nanLead
-    X[nanLE,] <- NA
+    X<-X[-nanLE,]
     indNaN=is.na(X)
     for (i in 1:N){  
       x = X[,i]
