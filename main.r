@@ -9,6 +9,7 @@ source('MissData.r')
 source('runKF.r')
 source('SKF.r')
 source('EM_DFM_SS_block_idioQARMA_restrMQ.r')
+source('em_converged.r')
 
 
 # Dados e parametros ------------------------------------------------------
@@ -121,4 +122,10 @@ Par<-list(r=c(1,1,1),p=1,max_iter=500,i_idio=c(rep(T,25),F),
 
 RES<-EM_DFM_SS_block_idioQARMA_restrMQ(X,Par)
 
+i<-26
+plot(X[,i],main=i)
+lines(RES$X_sm[,i],col=2)
+
+
+RES$FF
 

@@ -12,7 +12,7 @@ em_converged <- function(loglik = NULL, previous_loglik = NULL, threshold = NULL
   # If we are doing MAP estimation (using priors), the likelihood can decrase,
   # even though the mode of the posterior is increasing.
   
-  nargin <- 4 - sum(is.null(loglik, previous_loglik, threshold, check_increased))
+  nargin <- 4 - sum(c(is.null(loglik), is.null(previous_loglik), is.null(threshold), is.null(check_increased)))
   
   if(nargin < 3){threshold <- 1e-4}
   if(nargin < 4){check_increased <- 1}

@@ -1,11 +1,12 @@
 SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
   
+
   # %______________________________________________________________________
   # % Kalman filter for stationary systems with time-varying system matrices
   # % and missing data.
   # %
   # % The model is        y_t   = Z * a_t + eps_t       
-  # %                     a_t+1 = T * a_t + u_t       
+  # %                     a_t+1 = TT * a_t + u_t       
   # %
   # %______________________________________________________________________
   # % INPUT  
@@ -56,7 +57,8 @@ SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
     R_t <- res_MissData$R
     L_t <- res_MissData$L
     
-    if(is.null(y_t)){
+    # if(is.null(y_t)){
+    if(sum(is.na(y_t))==length(y_t)){
       Au <- A
       Pu <- P
     } else {
@@ -87,7 +89,7 @@ SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
     S$PmU[,,t+1] <- Pu
   } # t
   
-  if(is.null(y_t)){
+  if(sum(is.na(y_t))==length(y_t)){
     S$KZ <- zeros(m,m)
   }else{
     S$KZ <- PZF%*%Z_t
