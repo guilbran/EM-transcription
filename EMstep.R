@@ -1,29 +1,5 @@
-library(matlab)
-library(R.matlab)
-library(Matrix)
-
-y <- as.matrix(read.csv("arquivos pra fç EMstep/y.csv", header = F))
-A <- as.matrix(read.csv("arquivos pra fç EMstep/A.csv", header = F))
-C <- as.matrix(read.csv("arquivos pra fç EMstep/C.csv", header = F))
-Q <- as.matrix(read.csv("arquivos pra fç EMstep/Q.csv", header = F))
-R <- as.matrix(read.csv("arquivos pra fç EMstep/R.csv", header = F))
-Z_0 <- as.matrix(read.csv("arquivos pra fç EMstep/Z_0.csv", header = F))
-V_0 <- as.matrix(read.csv("arquivos pra fç EMstep/V_0.csv", header = F))
-r <- as.matrix(read.csv("arquivos pra fç EMstep/r0.csv", header = F))
-p <- as.matrix(read.csv("arquivos pra fç EMstep/p.csv", header = F))
-R_mat <- as.matrix(read.csv("arquivos pra fç EMstep/R_mat.csv", header = F))
-q <- as.matrix(read.csv("arquivos pra fç EMstep/q0.csv", header = F))
-nQ <- as.matrix(read.csv("arquivos pra fç EMstep/nQ.csv", header = F))
-i_idio <- as.matrix(read.csv("arquivos pra fç EMstep/i_idio.csv", header = F))
-blocks <- as.matrix(read.csv("arquivos pra fç EMstep/blocks.csv", header = F))
-Zsmooth <- as.matrix(read.csv("arquivos pra fç EMstep/Zsmooth.csv", header = F))
-Vsmooth <- readMat("arquivos pra fç EMstep/Vsmooth.mat")$Vsmooth
-VVsmooth <- readMat("arquivos pra fç EMstep/VVsmooth.mat")$VVsmooth
-loglik <- as.matrix(read.csv("arquivos pra fç EMstep/loglik.csv", header = F))
-
-
 EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL, V_0 = NULL, 
-                   r = NULL, p = NULL, R_mat = NULL , q  = NULL, nQ  = NULL, i_idio  = NULL, blocks  = NULL){
+                   r = NULL, p = NULL, R_mat = NULL, q = NULL, nQ = NULL, i_idio = NULL, blocks = NULL){
   
   n <- size(y,1)
   TT <- size(y,2)
@@ -155,34 +131,37 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
     R_con_i <- R_con_i[no_c,]
     q_con_i <- q_con_i[no_c,] 
     
-    if(i != 1){
+   
       for(j in idx_iQ){
         denom <- zeros(rps,rps)
         nom <- zeros(1,rps)
         idx_jQ <- j-c(nM)
-        i_idio_jQ <- (rp1+n_idio_M+5*(idx_jQ-1)+1):(rp1+n_idio_M+5*idx_jQ)
-        V_0_new[i_idio_jQ,i_idio_jQ] <- Vsmooth[i_idio_jQ,i_idio_jQ,1]
-        A_new[i_idio_jQ[1],i_idio_jQ[1]] <- A_i[i_idio_jQ[1]-rp1,i_idio_jQ[1]-rp1]
-        Q_new[i_idio_jQ[1],i_idio_jQ[1]] <- Q_i[i_idio_jQ[1]-rp1,i_idio_jQ[1]-rp1]
         
-        for(t in 1:TT){
-          nanYt <- as.vector(!nanY[j,t])*1
-          nn2 <- sum(bl_idxQ[i,])
-          denom <- denom + kronecker(Zsmooth[bl_idxQ[i,],t+1][1:nn2] %*% t(Zsmooth[bl_idxQ[i,],t+1][1:nn2]) + Vsmooth[bl_idxQ[i,],bl_idxQ[i,],t+1][1:nn2,1:nn2],nanYt)
-          nom <- nom + y[j,t] %*% t(Zsmooth[bl_idxQ[i,],t+1][1:nn2])
-          nom <- nom - nanYt %*% (matrix(c(1,2,3,2,1), nrow = 1) %*% Zsmooth[i_idio_jQ,t+1] %*% t(Zsmooth[bl_idxQ[i,],t+1][1:nn2]) +
-                                    matrix(c(1,2,3,2,1), nrow = 1) %*% Vsmooth[i_idio_jQ,bl_idxQ[i,],t+1][,1:nn2])
+        if(i != 1){
+          i_idio_jQ <- (rp1+n_idio_M+5*(idx_jQ-1)+1):(rp1+n_idio_M+5*idx_jQ)
+          V_0_new[i_idio_jQ,i_idio_jQ] <- Vsmooth[i_idio_jQ,i_idio_jQ,1]
+          A_new[i_idio_jQ[1],i_idio_jQ[1]] <- A_i[i_idio_jQ[1]-rp1,i_idio_jQ[1]-rp1]
+          Q_new[i_idio_jQ[1],i_idio_jQ[1]] <- Q_i[i_idio_jQ[1]-rp1,i_idio_jQ[1]-rp1]
+          
+          for(t in 1:TT){
+            nanYt <- as.vector(!nanY[j,t])*1
+            nn2 <- sum(bl_idxQ[i,])
+            denom <- denom + kronecker(Zsmooth[bl_idxQ[i,],t+1][1:nn2] %*% t(Zsmooth[bl_idxQ[i,],t+1][1:nn2]) + Vsmooth[bl_idxQ[i,],bl_idxQ[i,],t+1][1:nn2,1:nn2],nanYt)
+            nom <- nom + y[j,t] %*% t(Zsmooth[bl_idxQ[i,],t+1][1:nn2])
+            nom <- nom - nanYt %*% (matrix(c(1,2,3,2,1), nrow = 1) %*% Zsmooth[i_idio_jQ,t+1] %*% t(Zsmooth[bl_idxQ[i,],t+1][1:nn2]) +
+                                      matrix(c(1,2,3,2,1), nrow = 1) %*% Vsmooth[i_idio_jQ,bl_idxQ[i,],t+1][,1:nn2])
+          }
+          C_i <- solve(denom) %*% t(nom)
+          C_i_constr <- C_i - solve(denom) %*% t(R_con_i) %*% solve(R_con_i %*% solve(denom) %*% t(R_con_i)) %*% (R_con_i %*% C_i - q_con_i)
+          nn3 <- sum(bl_idxQ[i,])
+          C_new[j,bl_idxQ[i,]][1:nn3] <- C_i_constr
         }
-        C_i <- solve(denom) %*% t(nom)
-        C_i_constr <- C_i - solve(denom) %*% t(R_con_i) %*% solve(R_con_i %*% solve(denom) %*% t(R_con_i)) %*% (R_con_i %*% C_i - q_con_i)
-        C_new[j,bl_idxQ[i,]] <- C_i_constr
       }
-    }
   }
   
   R_new <- zeros(n,n)
   for(t in 1:TT){
-    nanYt <- diag(!nanY[,t])
+    nanYt <- diag(!nanY[,t])*1 == 1
     R_new <- R_new + (y[,t] - nanYt %*% C_new %*% Zsmooth[,t+1]) %*% t(y[,t] - nanYt %*% C_new %*% Zsmooth[,t+1]) + nanYt %*% C_new %*% Vsmooth[,,t+1] %*% t(C_new) %*% nanYt + (eye(n)-nanYt) %*% R %*% (eye(n)-nanYt)
   }
   
@@ -193,6 +172,6 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
   R_new <- diag(RR)
   
   # output
-  k <- list(C_new = C_new, R_new = R_new, A_new = A_new, Q_new = Q_new, Z_0 = Z_0, V_0 = V_0, loglik = loglik)
+  list(C_new = C_new, R_new = R_new, A_new = A_new, Q_new = Q_new, Z_0 = Z_0, V_0 = V_0, loglik = loglik)
   
 }
