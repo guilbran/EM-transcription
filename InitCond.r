@@ -1,6 +1,11 @@
-InitCond<-function(x,r,p,blocks,optNaN,Rcon,q,nQ,i_idio){
+InitCond<-function(xNaN,r,p,blocks,optNaN,R_mat,q,nQ,i_idio){
+  
+  x<-xNaN
+  Rcon<-R_mat
   
   library(magic)
+  
+  
   
   pC = size(Rcon,2)
   ppC = max(p,pC)
@@ -148,10 +153,11 @@ InitCond<-function(x,r,p,blocks,optNaN,Rcon,q,nQ,i_idio){
     
     res_i = resNaN[,ii_idio[i]]
     # number of leading zeros
-    leadZero = max( find( t(1:TT) == cumsum(is.na(res_i)) ) )
-    endZero = max( find( t(1:TT) == cumsum(is.na(res_i[length(res_i):1])) ) );
+    # leadZero = max( find( t(1:TT) == cumsum(is.na(res_i)) ) )
+    # endZero = max( find( TT:1 == cumsum(is.na(res_i[length(res_i):1])) ) );
+    # res_i<-res_i[(leadZero+1):(length(res_i)-endZero)]    
     
-    res_i<-res_i[(leadZero+1):(length(res_i)-endZero)]
+    res_i<-res_i[!is.na(res_i)]
     
     BM[i,i] = solve(t(res_i[1:(length(res_i)-1)])%*%res_i[1:(length(res_i)-1)])%*%t(res_i[1:(length(res_i)-1)])%*%res_i[2:length(res_i)] 
     SM[i,i] = var(res_i[2:length(res_i)]-res_i[1:(length(res_i)-1)]*BM[i,i])

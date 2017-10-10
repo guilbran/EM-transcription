@@ -28,7 +28,7 @@ FIS <- function(Y,Z,R,TT,Q,S){
   S$PmT           = array(0,c(m,m,nobs+1))
   S$AmT[,nobs+1] <- S$AmU[,nobs+1]
   S$PmT[,,nobs+1] <- S$PmU[,,nobs+1]
-  S$PmT_1[,,nobs] <- (eye(m)-S$KZ)%*%TT%*%S%PmU[,,nobs]
+  S$PmT_1[,,nobs] <- (eye(m)-S$KZ)%*%TT%*%S$PmU[,,nobs]
   
   pinv<-corpcor::pseudoinverse(S$Pm[,,nobs])
   

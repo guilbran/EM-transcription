@@ -22,6 +22,7 @@ SKF <-function(Y,Z,R,TT,Q,A_0,P_0){
   m <- dim(Z)[2]
   nobs  <- size(Y,2)
   
+  S<-list()
   S$Am <- array(NA,c(m,nobs))
   S$Pm <- array(NA,c(m,m,nobs))
   S$AmU <- array(NA,c(m,nobs+1))

@@ -1,4 +1,7 @@
 MissData <- function(y,C,R){
+  
+  library(matlab)
+  
   # ______________________________________________________________________
   #  PROC missdata                                                        
   #  PURPOSE: eliminates the rows in y & matrices Z, G that correspond to     
@@ -25,3 +28,12 @@ MissData <- function(y,C,R){
   return(list(y=y,C=C,R=R,L=L))
   
 }
+
+
+
+
+teste<-matrix(1:4,2,2)
+
+ind_teste<-matrix(c(T,T,F,T),2,2)
+
+teste[ind_teste]
