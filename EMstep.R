@@ -2,24 +2,24 @@ library(matlab)
 library(R.matlab)
 library(Matrix)
 
-y <- as.matrix(read.csv("arquivos pra fç EMstep/y.csv", header = F))
-A <- as.matrix(read.csv("arquivos pra fç EMstep/A.csv", header = F))
-C <- as.matrix(read.csv("arquivos pra fç EMstep/C.csv", header = F))
-Q <- as.matrix(read.csv("arquivos pra fç EMstep/Q.csv", header = F))
-R <- as.matrix(read.csv("arquivos pra fç EMstep/R.csv", header = F))
-Z_0 <- as.matrix(read.csv("arquivos pra fç EMstep/Z_0.csv", header = F))
-V_0 <- as.matrix(read.csv("arquivos pra fç EMstep/V_0.csv", header = F))
-r <- as.matrix(read.csv("arquivos pra fç EMstep/r0.csv", header = F))
-p <- as.matrix(read.csv("arquivos pra fç EMstep/p.csv", header = F))
-R_mat <- as.matrix(read.csv("arquivos pra fç EMstep/R_mat.csv", header = F))
-q <- as.matrix(read.csv("arquivos pra fç EMstep/q0.csv", header = F))
-nQ <- as.matrix(read.csv("arquivos pra fç EMstep/nQ.csv", header = F))
-i_idio <- as.matrix(read.csv("arquivos pra fç EMstep/i_idio.csv", header = F))
-blocks <- as.matrix(read.csv("arquivos pra fç EMstep/blocks.csv", header = F))
-Zsmooth <- as.matrix(read.csv("arquivos pra fç EMstep/Zsmooth.csv", header = F))
-Vsmooth <- readMat("arquivos pra fç EMstep/Vsmooth.mat")$Vsmooth
-VVsmooth <- readMat("arquivos pra fç EMstep/VVsmooth.mat")$VVsmooth
-loglik <- as.matrix(read.csv("arquivos pra fç EMstep/loglik.csv", header = F))
+# y <- as.matrix(read.csv("arquivos pra fç EMstep/y.csv", header = F))
+# A <- as.matrix(read.csv("arquivos pra fç EMstep/A.csv", header = F))
+# C <- as.matrix(read.csv("arquivos pra fç EMstep/C.csv", header = F))
+# Q <- as.matrix(read.csv("arquivos pra fç EMstep/Q.csv", header = F))
+# R <- as.matrix(read.csv("arquivos pra fç EMstep/R.csv", header = F))
+# Z_0 <- as.matrix(read.csv("arquivos pra fç EMstep/Z_0.csv", header = F))
+# V_0 <- as.matrix(read.csv("arquivos pra fç EMstep/V_0.csv", header = F))
+# r <- as.matrix(read.csv("arquivos pra fç EMstep/r0.csv", header = F))
+# p <- as.matrix(read.csv("arquivos pra fç EMstep/p.csv", header = F))
+# R_mat <- as.matrix(read.csv("arquivos pra fç EMstep/R_mat.csv", header = F))
+# q <- as.matrix(read.csv("arquivos pra fç EMstep/q0.csv", header = F))
+# nQ <- as.matrix(read.csv("arquivos pra fç EMstep/nQ.csv", header = F))
+# i_idio <- as.matrix(read.csv("arquivos pra fç EMstep/i_idio.csv", header = F))
+# blocks <- as.matrix(read.csv("arquivos pra fç EMstep/blocks.csv", header = F))
+# Zsmooth <- as.matrix(read.csv("arquivos pra fç EMstep/Zsmooth.csv", header = F))
+# Vsmooth <- readMat("arquivos pra fç EMstep/Vsmooth.mat")$Vsmooth
+# VVsmooth <- readMat("arquivos pra fç EMstep/VVsmooth.mat")$VVsmooth
+# loglik <- as.matrix(read.csv("arquivos pra fç EMstep/loglik.csv", header = F))
 
 
 EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL, V_0 = NULL, 
@@ -36,6 +36,13 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
   
   #Running the Kalman filter with the current estimates of the parameters
   ################ [Zsmooth, Vsmooth, VVsmooth, loglik] = runKF(y, A, C, Q, R, Z_0, V_0);
+  
+  res_runKF <- runKF(y, A, C, Q, R, Z_0, V_0)
+
+  Zsmooth<-res_runKF$xsmooth
+  Vsmooth<-res_runKF$Vsmooth
+  VVsmooth<-res_runKF$VVsmooth
+  loglik <- res_runKF$loglik
   
   A_new <- A
   Q_new <- Q

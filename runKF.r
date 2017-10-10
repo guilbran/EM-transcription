@@ -13,7 +13,12 @@ runKF <- function(y, A, C, Q, R, x_0, Sig_0){
   S <- SKF(y,C,R,A,Q, x_0, Sig_0);
   S <- FIS(y,C,R,A,Q,S);
   
-  return(S)  
+  xsmooth <- S$AmT;
+  Vsmooth <- S$PmT;
+  VVsmooth <- S$PmT_1;
+  loglik <- S$loglik;
+  
+  return(list(xsmooth,Vsmooth,VVsmooth,loglik))  
 
 }
 
