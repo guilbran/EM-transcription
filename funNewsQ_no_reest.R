@@ -308,5 +308,5 @@ funNewsQ_no_reest <- function(P){
   list(OldFcst = OldFcst,NewFcst = NewFcst, TrueSer = TrueSer, DatesNews = DatesNews, GroupNews = GroupNews, 
        SerNews = SerNews, GroupNames = GroupNames, Gain = Gain, Fcst = Fcst, Actual = Actual, Filt = Filt,
        Series = Series, Group = Group, P = P)
-
+  
 }
