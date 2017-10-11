@@ -226,7 +226,7 @@ funNewsQ_no_reest <- function(P){
     
     Date_i <- DatesV[i,]
     Month_i <- Month[i];
-    message(paste('Computing the news for the vintages: y', DatesV[i,1],' m', DatesV[i,2]))
+    message(paste0('Computing the news for the vintages: y', DatesV[i,1],' m', DatesV[i,2]))
     
     # first unbalancedeness pattern
     eval(paste(text = paste0('UnbP = UnbPattM',Month_i,'_1;')))
@@ -245,7 +245,7 @@ funNewsQ_no_reest <- function(P){
     X_old <- rbind(X_old,x)
     
     if(i == iS){
-      eval(parse(text = paste0('R_new = EM_DFM_SS',P$method,P$idio,P$restr,'(X_new,P)')))
+      eval(parse(text = paste0('R_new <- EM_DFM_SS',P$method,P$idio,P$restr,'(X_new,P)')))
       R_new$Groups <- Group
       R_new$Series <- Series
     }
