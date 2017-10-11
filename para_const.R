@@ -8,14 +8,14 @@
 
 para_const <- function(X = NULL, P = NULL, lag = NULL){
   
-  Z_0 = P$Z_0
-  V_0 = P$V_0
-  A = P$A
-  C = P$C
-  Q = P$Q
-  R = P$R
-  Mx = P$Mx
-  Wx = P$Wx
+  Z_0 <- P$Z_0
+  V_0 <- P$V_0
+  A <- P$A
+  C <- P$C
+  Q <- P$Q
+  R <- P$R
+  Mx <- P$Mx
+  Wx <- P$Wx
   
   # %--------------------------------------------------------------------------
   # % Preparation of the data
