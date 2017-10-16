@@ -1,16 +1,17 @@
 
 rm(list=ls())
 
-source('remNaNs_spline.r')
-source('InitCond.r')
-source('EMstep.R')
-source('FIS.r')
-source('MissData.r')
-source('runKF.r')
-source('SKF.r')
-source('EM_DFM_SS_block_idioQARMA_restrMQ.r')
-source('em_converged.r')
+# source('remNaNs_spline.r')
+# source('InitCond.r')
+# source('EMstep.R')
+# source('FIS.r')
+# source('MissData.r')
+# source('runKF.r')
+# source('SKF.r')
+# source('EM_DFM_SS_block_idioQARMA_restrMQ.r')
+# source('em_converged.r')
 
+source('EM_method.r')
 
 # Dados e parametros ------------------------------------------------------
 
