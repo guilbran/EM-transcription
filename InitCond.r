@@ -5,8 +5,6 @@ InitCond<-function(xNaN,r,p,blocks,optNaN,R_mat,q,nQ,i_idio){
   
   library(magic)
   
-  
-  
   pC = size(Rcon,2)
   ppC = max(p,pC)
   n_b = size(blocks,2)

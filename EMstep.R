@@ -83,7 +83,7 @@ EMstep <- function(y = NULL, A = NULL, C = NULL, Q = NULL, R = NULL, Z_0 = NULL,
     if(i == 1){
       R_con <- kronecker(R_mat,eye(r[i]))
     }else{
-      R_con <- as.matrix(bdiag(R_con, kronecker(R_mat,eye(r[i]))))
+      R_con <- as.matrix(Matrix::bdiag(R_con, kronecker(R_mat,eye(r[i]))))
     }
     q_con <- rbind(q_con, zeros(r[i]*size(R_mat,1),1))
   }
